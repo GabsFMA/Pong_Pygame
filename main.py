@@ -100,12 +100,10 @@ class Ball:
     def getRect(self):
         return self.ball
             
-# Main game loop
 # Game Manager
 def main():
     running = True
 
-    # Defining the objects
     player1 = Player(20, 0, 10, 100, 10, BLUE)
     player2 = Player(WIDTH-30, 0, 10, 100, 10, RED)
     ball = Ball(WIDTH//2, HEIGHT//2, 7, 7, WHITE)
