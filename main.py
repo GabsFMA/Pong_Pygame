@@ -7,6 +7,8 @@ font = pygame.font.Font('freesansbold.ttf', 20)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
 WIDTH = 800
 HEIGHT = 900
@@ -26,11 +28,11 @@ class Player:
         self.height = height
         self.speed = speed
         self.color = color
-        self.geekRect = pygame.Rect(self.posx, self.posy, self.WIDTH, self.height)
-        self.geek = pygame.draw.rect(screen, self.color, self.geekRect)
+        self.playerRect = pygame.Rect(self.posx, self.posy, self.WIDTH, self.height)
+        self.player = pygame.draw.rect(screen, self.color, self.playerRect)
 
     def display(self):
-        self.geek = pygame.draw.rect(screen, self.color, self.geekRect)
+        self.player = pygame.draw.rect(screen, self.color, self.playerRect)
 
     def update(self, yFac):
         self.posy = self.posy + self.speed * yFac
@@ -40,7 +42,7 @@ class Player:
         elif self.posy + self.height > HEIGHT:
             self.posy = HEIGHT - self.height
 
-        self.geekRect = pygame.Rect(self.posx, self.posy, self.WIDTH, self.height)
+        self.playerRect = pygame.Rect(self.posx, self.posy, self.WIDTH, self.height)
 
     def displayScore(self, text, score, x, y, color):
         text = font.render(text+str(score), True, color)
@@ -50,7 +52,7 @@ class Player:
         screen.blit(text, textRect)
     
     def getRect(self):
-        return self.geekRect
+        return self.playerRect
     
 # Ball class
 class Ball:
@@ -98,3 +100,68 @@ class Ball:
     def getRect(self):
         return self.ball
             
+# Main game loop
+# Game Manager
+def main():
+    running = True
+
+    # Defining the objects
+    player1 = Player(20, 0, 10, 100, 10, BLUE)
+    player2 = Player(WIDTH-30, 0, 10, 100, 10, RED)
+    ball = Ball(WIDTH//2, HEIGHT//2, 7, 7, WHITE)
+
+    listOfplayers = [player1, player2]
+
+    player1Score, player2Score = 0, 0
+    player1YFac, player2YFac = 0, 0
+
+    while running:
+        screen.fill(BLACK)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    player2YFac = -1
+                if event.key == pygame.K_DOWN:
+                    player2YFac = 1
+                if event.key == pygame.K_w:
+                    player1YFac = -1
+                if event.key == pygame.K_s:
+                    player1YFac = 1
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    player2YFac = 0
+                if event.key == pygame.K_w or event.key == pygame.K_s:
+                    player1YFac = 0
+
+        for player in listOfplayers:
+            if pygame.Rect.colliderect(ball.getRect(), player.getRect()):
+                ball.hit()
+
+        player1.update(player1YFac)
+        player2.update(player2YFac)
+        point = ball.update()
+
+        if point == -1:
+            player1Score += 1
+        elif point == 1:
+            player2Score += 1
+
+        if point:  
+            ball.reset()
+
+        player1.display()
+        player2.display()
+        ball.display()
+
+        player1.displayScore("player_1 : ", player1Score, 100, 20, WHITE)
+        player2.displayScore("player_2 : ", player2Score, WIDTH-100, 20, WHITE)
+
+        pygame.display.update()
+        clock.tick(FPS)
+
+if __name__ == "__main__":
+    main()
+    pygame.quit()
