@@ -21,10 +21,10 @@ FPS = 30
 
 # Player class
 class Player:
-    def __init__(self, posx, posy, WIDTH, height, speed, color):
+    def __init__(self, posx, posy, width, height, speed, color):
         self.posx = posx
         self.posy = posy
-        self.WIDTH = WIDTH
+        self.WIDTH = width
         self.height = height
         self.speed = speed
         self.color = color
